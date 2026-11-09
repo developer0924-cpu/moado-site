@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>하루</title>
+<title>모아두</title>
 <style>
   body{margin:0;font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:#F4EEE3;color:#1B1815;text-align:center;padding:72px 24px}
   h2{font-size:22px;margin:0 0 12px}
@@ -14,21 +14,21 @@
 </head>
 <body>
 <div class="mark" id="mark">📖</div>
-<h2 id="t">하루로 돌아가는 중…</h2>
+<h2 id="t">모아두로 돌아가는 중…</h2>
 <p id="m"></p>
-<a class="btn" id="go" href="#">하루로 돌아가기</a>
+<a class="btn" id="go" href="#">모아두로 돌아가기</a>
 <script>
   var q = new URLSearchParams(location.search);
   var app = (q.get("app") || "auth").replace(/[^a-z]/g, "");
   var ok = q.get("ok") === "1";
   var T = {
-    drive: ok ? ["구글 드라이브를 연결했어요", "이제 회의록과 녹음이 내 드라이브 「하루」 폴더에도 보관돼요."]
+    drive: ok ? ["구글 드라이브를 연결했어요", "이제 회의록과 녹음이 내 드라이브 「모아두」 폴더에도 보관돼요."]
               : ["연결하지 못했어요", "허용을 취소했거나 시간이 지났어요. 앱에서 다시 눌러 주세요."],
-    notion: ok ? ["노션을 연결했어요", "노션에 「하루」 페이지가 생겼어요. 이제 회의록과 할 일이 여기에도 쌓여요."]
+    notion: ok ? ["노션을 연결했어요", "노션에 「모아두」 페이지가 생겼어요. 이제 회의록과 할 일이 여기에도 쌓여요."]
                : [q.get("why") === "page" ? "페이지를 하나 골라 주세요" : "연결하지 못했어요",
-                  q.get("why") === "page" ? "노션 허용 화면에서 하루가 쓸 페이지를 하나 이상 선택해야 해요. 앱에서 「노션 연결」을 다시 눌러 주세요."
+                  q.get("why") === "page" ? "노션 허용 화면에서 모아두가 쓸 페이지를 하나 이상 선택해야 해요. 앱에서 「노션 연결」을 다시 눌러 주세요."
                                           : "허용을 취소했거나 시간이 지났어요. 앱에서 다시 눌러 주세요."]
-  }[app] || ["하루로 돌아가기", ""];
+  }[app] || ["모아두로 돌아가기", ""];
   document.getElementById("t").textContent = T[0];
   document.getElementById("m").textContent = T[1];
   document.getElementById("mark").textContent = ok ? "✅" : "📖";
