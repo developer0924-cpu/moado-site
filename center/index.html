@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>하랩스 센터</title>
+<style>
+@font-face{font-family:"MaruBuri";src:url("../fonts/MaruBuri-SemiBold.woff2") format("woff2");font-weight:600;font-display:swap}
+:root{--bg:#F4EEE3;--paper:#FAF6EE;--line:#D9CFBF;--rule:#1B1815;--ink:#1B1815;--ink2:#3E3832;--ink3:#7A7268;--rec:#B23A2A;--ok:#3D5A2A}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink2);font:14px/1.65 -apple-system,"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+.serif{font-family:"MaruBuri",serif;font-weight:600}
+header{padding:28px 40px 0;max-width:1240px}
+.mast{display:flex;align-items:baseline;gap:18px;border-bottom:2px solid var(--rule);padding-bottom:10px}
+.mast h1{font:600 30px "MaruBuri",serif;color:var(--ink);margin:0;letter-spacing:-.5px}
+.mast .issue{color:var(--ink3);font-size:13px}
+.mast .who{margin-left:auto;color:var(--ink3);font-size:12px}
+.mast a{color:var(--ink3);font-size:12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+nav{display:flex;gap:26px;padding:12px 40px 0;max-width:1240px;border-bottom:1px solid var(--line)}
+nav button{border:0;background:none;padding:6px 0 10px;font-size:14px;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+nav button.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:600}
+main{padding:26px 40px 80px;max-width:1240px}
+.lead{font:600 19px/1.7 "MaruBuri",serif;color:var(--ink);margin:0 0 24px;max-width:780px}
+.ledger{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);overflow:hidden}
+.ledger>div{padding:14px 16px 16px 0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 -1px -1px 0}
+.ledger>div+div{padding-left:16px}.ledger>div:nth-child(4n+1){padding-left:0}
+.ledger .l{font-size:12px;color:var(--ink3)}.ledger .v{font:600 30px "MaruBuri",serif;color:var(--ink);line-height:1.3}.ledger .s{font-size:12px;color:var(--ink3)}
+table{width:100%;border-collapse:collapse;font-size:13px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+th,td{text-align:left;padding:9px 10px 9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:500;color:var(--ink3);font-size:12px;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+input,select,textarea{font:inherit;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:3px 2px;background:transparent;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:0;border-bottom-color:var(--ink)}
+textarea{border:1px solid var(--line)}
+button.b{font:inherit;border:1px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:2px;padding:5px 14px;cursor:pointer}
+button.g{font:inherit;border:0;background:none;color:var(--ink2);padding:2px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-size:12px}
+.tag{font-size:12px;color:var(--ink3)}
+.ok{color:var(--ok)}.bad{color:var(--rec)}.muted{color:var(--ink3)}
+.bar{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:0 0 16px}
+.form{border-top:1px solid var(--rule);border-bottom:1px solid var(--line);padding:14px 0;margin-bottom:22px}
+.note{font-size:12px;color:var(--ink3);margin:10px 0 18px}
+#login{max-width:420px;margin:16vh auto;text-align:center}
+#login h1{font:600 38px "MaruBuri",serif;color:var(--ink);margin:0 0 4px}
+#login .rule{border-top:2px solid var(--rule);width:56px;margin:14px auto}
+.kakao{background:#FEE500;color:#191600;border:0;border-radius:6px;padding:13px 26px;font-size:15px;font-weight:600;cursor:pointer;margin-top:22px}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div id="login" class="hide">
+  <h1>하랩스 센터</h1>
+  <div class="rule"></div>
+  <p class="muted">하루를 돌보는 곳 · 운영진만 들어올 수 있어요</p>
+  <button class="kakao" id="kakaoBtn">카카오로 로그인</button>
+  <p class="bad" id="loginMsg"></p>
+</div>
+
+<div id="app" class="hide">
+  <header><div class="mast"><h1>하랩스 센터</h1><span class="issue" id="issue"></span><span class="who" id="who"></span><a id="logout">나가기</a></div></header>
+  <nav id="tabs">
+    <button data-t="home" class="on">오늘</button>
+    <button data-t="live">실시간</button>
+    <button data-t="members">고객</button>
+    <button data-t="usage">쓰임과 비용</button>
+    <button data-t="voice">시킨 말</button>
+    <button data-t="lex">말투 사전</button>
+    <button data-t="quotes">한 문장</button>
+    <button data-t="codes">초대코드</button>
+    <button data-t="prices">단가</button>
+  </nav>
+  <main>
+    <section id="t-home"></section>
+    <section id="t-live" class="hide"></section>
+    <section id="t-members" class="hide"></section>
+    <section id="t-usage" class="hide"></section>
+    <section id="t-voice" class="hide"></section>
+    <section id="t-lex" class="hide"></section>
+    <section id="t-quotes" class="hide"></section>
+    <section id="t-codes" class="hide"></section>
+    <section id="t-prices" class="hide"></section>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const sb = supabase.createClient("https://cktcediievgsqvypoqoa.supabase.co", "sb_publishable_NyahySG_4QrVSsPhbugDWA_-H766bXV");
+const KRW = 1400;  // 달러→원 (대략)
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const won = (usd) => Math.round((+usd || 0) * KRW).toLocaleString() + "원";
+const day = (t) => t ? new Date(t).toLocaleString("ko-KR", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "-";
+const PLANS = { pilot: "파일럿(무료)", premium: "프리미엄", vip: "VIP", stop: "중지" };
+const FAIL = (r) => /못|아님|없어요/.test(r || "");
+
+async function rpc(fn, args) { const { data, error } = await sb.rpc(fn, args || {}); if (error) throw error; return data; }
+
+// ---------- 로그인 ----------
+$("#kakaoBtn").onclick = () => sb.auth.signInWithOAuth({ provider: "kakao", options: { redirectTo: location.origin + location.pathname } });
+$("#logout").onclick = async () => { await sb.auth.signOut(); location.reload(); };
+
+async function boot() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { $("#login").classList.remove("hide"); return; }
+  try { await rpc("admin_summary"); }
+  catch (e) { $("#login").classList.remove("hide"); $("#loginMsg").textContent = "관리자 계정이 아니에요 (" + (session.user.email || "") + ")"; return; }
+  $("#who").textContent = session.user.email || "";
+  $("#issue").textContent = new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "long" });
+  $("#app").classList.remove("hide");
+  show("home");
+}
+document.querySelectorAll("#tabs button").forEach((b) => b.onclick = () => show(b.dataset.t));
+function show(t) {
+  document.querySelectorAll("#tabs button").forEach((b) => b.classList.toggle("on", b.dataset.t === t));
+  document.querySelectorAll("main section").forEach((s) => s.classList.toggle("hide", s.id !== "t-" + t));
+  if (t !== "live") clearInterval(LIVE_T);
+  ({ home, live, members, usage, voice, lex, quotes, codes, prices })[t]().catch((e) => $("#t-" + t).innerHTML = `<p class="bad">불러오지 못했어요. ${esc(e.message)}</p>`);
+}
+
+// ---------- 실시간 사용 (15초마다) ----------
+let LIVE_T = null;
+async function live() {
+  await liveDraw();
+  clearInterval(LIVE_T);
+  LIVE_T = setInterval(() => { if (!document.hidden && !$("#t-live").classList.contains("hide")) liveDraw().catch(() => {}); }, 15000);
+}
+async function liveDraw() {
+  if (document.activeElement && document.activeElement.closest && document.activeElement.closest("#t-live input")) return; // 한도 고치는 중엔 그대로
+  const rows = (await rpc("admin_usage_live")).filter((r) => r.last_at || r.active);
+  const ago = (t) => { if (!t) return "-"; const m = Math.round((Date.now() - new Date(t)) / 60000); return m < 1 ? "방금" : m < 60 ? m + "분 전" : m < 1440 ? Math.round(m / 60) + "시간 전" : Math.round(m / 1440) + "일 전"; };
+  const today = rows.reduce((a, r) => a + (+r.cost_today || 0), 0), week = rows.reduce((a, r) => a + (+r.cost_7d || 0), 0);
+  const now = new Date();
+  $("#t-live").innerHTML = `<div class="ledger" style="margin-bottom:20px">
+    <div><div class="l">오늘 전체 비용</div><div class="v">${won(today)}</div><div class="s">밤 12시 기준 · ${now.toLocaleTimeString("ko-KR")} 갱신</div></div>
+    <div><div class="l">최근 7일</div><div class="v">${won(week)}</div><div class="s">한 달로 치면 약 ${won(week / 7 * 30)}</div></div></div>
+  <table><tr><th>누구</th><th>오늘 쓴 횟수 / 하루 한도</th><th class="num">최근 1시간</th><th class="num">막힘</th><th class="num">오늘 비용</th><th class="num">7일 비용</th><th class="num">한 달 예상</th><th>마지막</th><th>하루 한도</th></tr>
+  ${rows.map((r) => {
+    const own = r.own_calls > 0 && r.calls_today === 0, lim = Math.max(1, r.daily_limit || 1), pct = Math.min(100, Math.round(r.calls_today * 100 / lim));
+    const bar = own ? `<span class="muted">개인 키 · 오늘 ${r.own_calls}번 (한도 없음)</span>` :
+      `<div style="background:#E4DCCD;height:8px;border-radius:4px;width:180px"><div style="height:8px;border-radius:4px;width:${pct}%;background:${pct >= 100 ? "#C0392B" : pct > 80 ? "#B45309" : "#17191C"}"></div></div><div class="muted">${r.calls_today} / ${lim}번 · ${pct}%</div>`;
+    return `<tr data-kind="${r.kind}" data-id="${esc(r.id)}"><td><b>${esc(r.name || r.id)}</b><div class="muted">${r.kind === "code" ? "초대코드 " + esc(r.id) : (PLANS[r.plan] || r.plan || "")}</div></td>
+      <td>${bar}</td><td class="num">${r.calls_1h}</td><td class="num ${r.blocked_today ? "bad" : ""}">${r.blocked_today || ""}</td>
+      <td class="num">${won(r.cost_today)}</td><td class="num">${won(r.cost_7d)}</td><td class="num">${won(r.cost_7d / 7 * 30)}</td><td>${ago(r.last_at)}</td>
+      <td><input class="lim" type="number" step="100" value="${r.daily_limit}" style="width:80px"> <button class="b lsave">저장</button></td></tr>`;
+  }).join("")}</table>
+  <p class="note">횟수는 AI를 부른 수예요 (상시 듣기는 30초마다 1번). 카톡 보내기·장소 찾기·막힌 시도는 한도에 안 세요. 비용은 단가 탭 값으로 어림 · 1달러 ${KRW}원.</p>`;
+  document.querySelectorAll("#t-live .lsave").forEach((b) => b.onclick = async () => {
+    const tr = b.closest("tr"), n = +tr.querySelector(".lim").value;
+    if (!n) return;
+    await rpc("admin_set_limit", { p_kind: tr.dataset.kind, p_id: tr.dataset.id, p_limit: n });
+    b.textContent = "바로 적용"; setTimeout(() => liveDraw(), 800);
+  });
+}
+
+// ---------- 한눈에 ----------
+async function home() {
+  const s = await rpc("admin_summary");
+  const failRate = s.voice_7d ? Math.round(s.voice_fail_7d * 100 / s.voice_7d) : 0;
+  const c = (l, v, sub) => `<div><div class="l">${l}</div><div class="v">${v}</div><div class="s">${sub || "&nbsp;"}</div></div>`;
+  $("#t-home").innerHTML = `
+  <p class="lead">고객 ${s.members}분 중 최근 일주일 동안 ${s.active_7d}분이 하루와 함께했어요. 오늘 하루는 ${s.calls_today}번 일했고, 든 비용은 ${won(s.cost_today)}이에요.</p>
+  <div class="ledger">
+    ${c("고객", s.members + "분", `사용 중 ${s.active}분`)}
+    ${c("이번 주 함께한 고객", s.active_7d + "분", "")}
+    ${c("한 달 매출", (s.mrr_krw || 0).toLocaleString() + "원", "고객 탭의 요금 합")}
+    ${c("한 달 운영비", won(s.cost_30d), "추정")}
+    ${c("오늘 운영비", won(s.cost_today), `${s.calls_today}번 일함`)}
+    ${c("이번 주 회의", s.meetings_7d + "개", "")}
+    ${c("이번 주 시킨 말", s.voice_7d + "번", s.voice_7d ? `못 알아들음 ${s.voice_fail_7d}번 · ${failRate}%` : "")}
+  </div>
+  <p class="note">이곳에서는 고객 명단, 쓰임, 하루에게 시킨 말 한 줄만 봐요. 회의 내용과 녹음, 노션·드라이브에 쌓인 기록은 고객 본인만 볼 수 있어요.</p>`;
+}
+
+// ---------- 회원 ----------
+async function members() {
+  const rows = await rpc("admin_members");
+  $("#t-members").innerHTML = `<table><tr><th>고객</th><th>연락</th><th>연결</th><th>요금제 · 월 요금</th><th>사용 · 하루 한도</th><th>이번 주</th><th class="num">한 달 운영비</th><th>지역 · 메모</th><th></th></tr>
+  ${rows.map((r) => `<tr data-id="${r.id}">
+    <td><b>${esc(r.name || "(이름 없음)")}</b><div class="muted">${esc([r.title, r.company].filter(Boolean).join(" · "))}</div><div class="muted">가입 ${day(r.joined)}</div></td>
+    <td>${esc(r.email)}<div class="muted">최근 ${day(r.last_seen)}</div></td>
+    <td>${[r.kakao && "카톡", r.drive && "드라이브", r.notion && "노션"].filter(Boolean).join(" · ") || '<span class="muted">아직 없음</span>'}</td>
+    <td><select class="plan">${Object.entries(PLANS).map(([k, v]) => `<option value="${k}" ${k === r.plan ? "selected" : ""}>${v}</option>`).join("")}</select><br>
+        <input class="price" type="number" step="1000" value="${r.price_krw}" style="width:110px;margin-top:4px"> 원</td>
+    <td><label><input type="checkbox" class="active" ${r.active ? "checked" : ""}> 사용</label><br><input class="limit" type="number" value="${r.daily_limit}" style="width:80px;margin-top:4px"> 번</td>
+    <td>일한 횟수 ${r.calls_7d}번<br>시킨 말 ${r.voice_7d}번${r.voice_fail_7d ? ` <span class="bad">· 못 알아들음 ${r.voice_fail_7d}</span>` : ""}<div class="muted">지금까지 회의 ${r.meetings}개</div></td>
+    <td class="num">${won(r.cost_30d)}</td>
+    <td><input class="region" placeholder="지역" value="${esc(r.region || "")}" style="width:90px"><br><textarea class="note2" rows="2" placeholder="메모" style="width:160px;margin-top:4px">${esc(r.note || "")}</textarea></td>
+    <td><button class="b save">저장</button></td></tr>`).join("")}</table>
+  <p class="note">운영비는 단가 탭의 값으로 어림한 금액이에요. 청구서를 보고 단가를 맞추면 바로 다시 계산돼요.</p>`;
+  document.querySelectorAll("#t-members .save").forEach((b) => b.onclick = async () => {
+    const tr = b.closest("tr"), v = (c) => tr.querySelector(c);
+    await rpc("admin_update_member", { p_id: tr.dataset.id, p_plan: v(".plan").value, p_price: +v(".price").value || 0, p_active: v(".active").checked,
+      p_limit: +v(".limit").value || 400, p_note: v(".note2").value, p_region: v(".region").value });
+    b.textContent = "저장했어요"; setTimeout(() => b.textContent = "저장", 1500);
+  });
+}
+
+// ---------- 사용량·비용 ----------
+async function usage() {
+  const rows = await rpc("admin_usage_daily", { p_days: 30 });
+  const byDay = {};
+  rows.forEach((r) => { (byDay[r.day] ??= []).push(r); });
+  const NAME = { anthropic: "클로드 · 정리와 답", openai: "오픈AI · 받아쓰기와 목소리", gemini: "제미나이 · 정리와 답", kakao: "카톡 보내기", place: "장소 찾기", deepinfra: "딥인프라" };
+  const total = rows.reduce((a, r) => a + (+r.cost || 0), 0);
+  $("#t-usage").innerHTML = `<div class="ledger" style="margin-bottom:24px">
+    <div><div class="l">최근 30일 운영비</div><div class="v">${won(total)}</div><div class="s">달러 ${total.toFixed(2)} · 추정</div></div>
+    <div><div class="l">하루 평균</div><div class="v">${won(total / 30)}</div><div class="s">&nbsp;</div></div></div>
+  <table><tr><th>날짜</th><th>어디에</th><th class="num">횟수</th><th class="num">고객</th><th class="num">읽은 글 / 쓴 글 (토큰)</th><th class="num">들은 소리 (분)</th><th class="num">비용</th></tr>
+  ${Object.entries(byDay).map(([d, list]) => list.map((r, i) => `<tr><td>${i ? "" : `<b>${d}</b>`}</td><td>${NAME[r.provider] || r.provider}</td><td class="num">${r.calls}</td><td class="num">${r.users}</td>
+    <td class="num">${(+r.in_tokens).toLocaleString()} / ${(+r.out_tokens).toLocaleString()}</td><td class="num">${r.audio_min}</td><td class="num">${won(r.cost)}</td></tr>`).join("")).join("")}
+  </table><p class="note">하루 서버를 거친 쓰임만 잡혀요. 대표님 개인 키로 쓰는 예전 방식은 각 회사 청구서에서 확인하세요.</p>`;
+}
+
+// ---------- 명령 문장 ----------
+let voiceFail = false;
+async function voice() {
+  const rows = await rpc("admin_voice", { p_limit: 300, p_fail_only: voiceFail });
+  $("#t-voice").innerHTML = `<div class="bar"><label><input type="checkbox" id="vf" ${voiceFail ? "checked" : ""}> 못 알아들은 것만 보기</label>
+    <span class="muted">「하루, ~」로 시킨 말 한 줄과 결과만 남아요.</span></div>
+  <table><tr><th>때</th><th>누가</th><th>한 말</th><th>하루가 알아들은 것</th><th>어떻게 됐나</th><th></th></tr>
+  ${rows.map((r) => `<tr><td>${day(r.at)}</td><td>${esc(r.name)}</td><td>${esc(r.said)}</td><td>${esc(r.understood)} <span class="tag">· ${esc(r.kind)}</span></td>
+    <td class="${FAIL(r.result) ? "bad" : "ok"}">${esc(r.result)}</td><td><button class="g add" data-said="${esc(r.said)}">사전에 넣기</button></td></tr>`).join("") || `<tr><td colspan="6" class="muted">아직 시킨 말이 없어요. 고객이 「하루, ~」로 말하면 여기에 쌓여요.</td></tr>`}
+  </table>`;
+  $("#vf").onchange = (e) => { voiceFail = e.target.checked; voice(); };
+  document.querySelectorAll("#t-voice .add").forEach((b) => b.onclick = () => { show("lex"); setTimeout(() => { $("#lv").value = b.dataset.said; $("#lv").focus(); }, 300); });
+}
+
+// ---------- 말투 사전 ----------
+const KIND = { name: "부르는 이름 · 하루를 이렇게 받아 적어요", ending: "말끝 · 사투리를 표준말로", phrase: "같은 뜻 · 다르게 말해도 같은 일", place: "장소 · 부르는 별명" };
+async function lex() {
+  const { data: rows, error } = await sb.from("lexicon").select("*").order("kind").order("region", { nullsFirst: true }).order("value");
+  if (error) throw error;
+  $("#t-lex").innerHTML = `<div class="form"><div class="bar" style="margin:0">
+    <select id="lk">${Object.entries(KIND).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select>
+    <input id="lv" placeholder="이렇게 말하면 (찾아도)" style="width:200px">
+    <span>→</span><input id="lm" placeholder="이 뜻 (찾아줘)" style="width:150px">
+    <input id="lr" placeholder="지역 (경상·전라…)" style="width:110px"><input id="ln" placeholder="메모" style="width:150px">
+    <button class="b" id="ladd">넣기</button></div>
+    <p class="note" style="margin:10px 0 0">여기 적은 말은 고객 앱이 하루에 한 번 받아 가요. 앱을 새로 깔지 않아도 돼요.</p></div>
+  <div class="bar"><input id="lq" placeholder="찾기"><select id="lf"><option value="">전체</option>${Object.entries(KIND).map(([k, v]) => `<option value="${k}">${v.split(" · ")[0]}</option>`).join("")}</select>
+    <span class="muted">${rows.length}개</span></div>
+  <table id="ltab"><tr><th>갈래</th><th>이렇게 말하면</th><th>이 뜻</th><th>지역</th><th>메모</th><th>쓰기</th><th></th></tr>
+  ${rows.map((r) => `<tr data-id="${r.id}" data-k="${r.kind}" data-q="${esc((r.value + " " + (r.meaning || "") + " " + (r.region || "")).toLowerCase())}">
+    <td class="muted">${KIND[r.kind].split(" · ")[0]}</td><td><b>${esc(r.value)}</b></td><td>${esc(r.meaning)}</td><td>${esc(r.region)}</td><td class="muted">${esc(r.note)}</td>
+    <td><input type="checkbox" class="la" ${r.active ? "checked" : ""}></td><td><button class="g ld">지우기</button></td></tr>`).join("")}</table>`;
+  const filt = () => { const q = $("#lq").value.toLowerCase(), k = $("#lf").value;
+    document.querySelectorAll("#ltab tr[data-id]").forEach((tr) => tr.classList.toggle("hide", (k && tr.dataset.k !== k) || (q && !tr.dataset.q.includes(q)))); };
+  $("#lq").oninput = filt; $("#lf").onchange = filt;
+  $("#ladd").onclick = async () => {
+    const value = $("#lv").value.trim(); if (!value) return;
+    const { error } = await sb.from("lexicon").insert({ kind: $("#lk").value, value, meaning: $("#lm").value.trim() || null, region: $("#lr").value.trim() || null, note: $("#ln").value.trim() || null });
+    if (error) return alert("넣지 못했어요. " + error.message); lex();
+  };
+  document.querySelectorAll("#ltab .la").forEach((c) => c.onchange = async () => { await sb.from("lexicon").update({ active: c.checked }).eq("id", c.closest("tr").dataset.id); });
+  document.querySelectorAll("#ltab .ld").forEach((b) => b.onclick = async () => { if (!confirm("이 말을 사전에서 지울까요?")) return; await sb.from("lexicon").delete().eq("id", b.closest("tr").dataset.id); lex(); });
+}
+
+// ---------- 한 문장 ----------
+async function quotes() {
+  const today = await rpc("today_quote");
+  const { data: rows, error } = await sb.from("quotes").select("*").order("sort").order("id");
+  if (error) throw error;
+  const d = today?.day;
+  const wait = rows.filter((r) => r.active && !r.shown_on);
+  const past = rows.filter((r) => r.shown_on && r.shown_on !== d).sort((a, b) => b.shown_on.localeCompare(a.shown_on));
+  const off = rows.filter((r) => !r.active && !r.shown_on);
+  const md = (x) => { const [, m, dd] = x.split("-"); return `${+m}월 ${+dd}일`; };
+  const row = (r, when) => `<tr data-id="${r.id}"><td class="muted" style="white-space:nowrap">${when}</td>
+    <td><b>${esc(r.ko)}</b><div class="muted" style="margin-top:4px">${esc(r.original)}</div></td>
+    <td class="muted" style="white-space:nowrap">${esc(r.author)}<br>${esc(r.work)}<br>${esc(r.place)}</td>
+    <td style="white-space:nowrap"><input type="checkbox" class="qa" ${r.active ? "checked" : ""}> 쓰기<br>
+      ${!r.shown_on && r.active ? `<button class="g qn">내일로</button><br>` : ""}<button class="g qe">고치기</button> <button class="g qd">지우기</button></td></tr>`;
+  $("#t-quotes").innerHTML = `
+  <p class="lead">${today ? `오늘(${md(d)})의 한 문장 — 「${esc(today.ko)}」 <span class="muted">${esc(today.author)}, ${esc(today.work)}</span>` : "아직 문장이 없어요."}</p>
+  <p class="note">하루에 하나씩, 아래 「나갈 차례」 순서대로 나가요. 앞으로 ${wait.length}일치 남았어요${wait.length < 8 ? " — 곧 바닥나요, 더 넣어 주세요" : ""}. 다 돌면 가장 오래전에 나간 문장부터 다시 나가요.<br>
+  원문(저작권이 끝난 고전)에서 직접 옮긴 문장만 넣어 주세요. 요즘 번역서의 문장을 그대로 옮기면 안 돼요.</p>
+  <div class="form"><div class="bar" style="margin:0;flex-wrap:wrap">
+    <textarea id="qk" placeholder="우리말 (직접 옮긴 문장)" style="width:100%;height:54px"></textarea>
+    <textarea id="qo" placeholder="원문" style="width:100%;height:44px"></textarea>
+    <input id="qa" placeholder="누구 (니체)" value="니체" style="width:110px"><input id="qw" placeholder="책 (『즐거운 학문』)" style="width:220px"><input id="qp" placeholder="자리 (276절)" style="width:160px">
+    <button class="b" id="qadd">넣기</button></div></div>
+  <table id="qtab"><tr><th>언제</th><th>문장</th><th>출처</th><th></th></tr>
+  ${wait.map((r, i) => row(r, i === 0 ? "내일" : `${i + 1}일 뒤`)).join("")}
+  ${off.map((r) => row(r, "쉬는 중")).join("")}
+  ${past.map((r) => row(r, md(r.shown_on) + " 나감")).join("")}</table>`;
+  const id = (b) => b.closest("tr").dataset.id;
+  $("#qadd").onclick = async () => {
+    const ko = $("#qk").value.trim(); if (!ko) return;
+    const sort = (rows.reduce((m, r) => Math.max(m, r.sort), 0) || 0) + 10;
+    const { error } = await sb.from("quotes").insert({ ko, original: $("#qo").value.trim() || null, author: $("#qa").value.trim() || "니체", work: $("#qw").value.trim() || null, place: $("#qp").value.trim() || null, sort });
+    if (error) return alert("넣지 못했어요. " + error.message); quotes();
+  };
+  document.querySelectorAll("#qtab .qa").forEach((c) => c.onchange = async () => { await sb.from("quotes").update({ active: c.checked }).eq("id", id(c)); quotes(); });
+  document.querySelectorAll("#qtab .qn").forEach((b) => b.onclick = async () => {
+    const min = Math.min(...wait.map((r) => r.sort)); await sb.from("quotes").update({ sort: min - 1 }).eq("id", id(b)); quotes(); });
+  document.querySelectorAll("#qtab .qe").forEach((b) => b.onclick = async () => {
+    const r = rows.find((x) => x.id == id(b)); const ko = prompt("우리말 문장", r.ko); if (ko == null || !ko.trim()) return;
+    await sb.from("quotes").update({ ko: ko.trim() }).eq("id", r.id); quotes(); });
+  document.querySelectorAll("#qtab .qd").forEach((b) => b.onclick = async () => { if (!confirm("이 문장을 지울까요?")) return; await sb.from("quotes").delete().eq("id", id(b)); quotes(); });
+}
+
+// ---------- 초대코드 ----------
+async function codes() {
+  const { data: rows, error } = await sb.from("testers").select("*").order("created_at", { ascending: false });
+  if (error) throw error;
+  $("#t-codes").innerHTML = `<div class="bar"><input id="cn" placeholder="받는 분 성함"><input id="cl" type="number" value="400" style="width:90px"> 번/일
+    <button class="b" id="cadd">코드 만들기</button><span class="muted">새 고객께 알려 드리면, 카카오로 시작할 때 넣어요</span></div>
+  <table><tr><th>코드</th><th>받는 분</th><th class="num">하루 한도</th><th>만든 날</th><th>쓰기</th></tr>
+  ${rows.map((r) => `<tr data-c="${esc(r.code)}"><td><b>${esc(r.code)}</b></td><td>${esc(r.name)}</td><td>${r.daily_limit}</td><td>${day(r.created_at)}</td>
+    <td><input type="checkbox" class="ca" ${r.active ? "checked" : ""}></td></tr>`).join("")}</table>`;
+  $("#cadd").onclick = async () => {
+    const code = "HARU-" + Array.from(crypto.getRandomValues(new Uint8Array(2))).map((b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+    const { error } = await sb.from("testers").insert({ code, name: $("#cn").value.trim() || "고객", daily_limit: +$("#cl").value || 400, active: true });
+    if (error) return alert("넣지 못했어요. " + error.message); codes();
+  };
+  document.querySelectorAll("#t-codes .ca").forEach((c) => c.onchange = async () => { await sb.from("testers").update({ active: c.checked }).eq("code", c.closest("tr").dataset.c); });
+}
+
+// ---------- 단가 ----------
+async function prices() {
+  const { data: rows, error } = await sb.from("prices").select("*").order("provider").order("model_like");
+  if (error) throw error;
+  $("#t-prices").innerHTML = `<p class="note">글은 100만 토큰당 달러, 소리는 1분당 달러예요. 청구서를 보고 맞춰 주세요. 모델 칸의 % 는 「그 밖의 모든 모델」이에요.</p>
+  <table><tr><th>회사</th><th>모델</th><th>읽기 $</th><th>쓰기 $</th><th>소리 $/분</th><th>메모</th><th></th></tr>
+  ${rows.map((r) => `<tr data-id="${r.id}"><td>${esc(r.provider)}</td><td>${esc(r.model_like)}</td>
+    <td><input class="pi" value="${r.in_per_m}" style="width:70px"></td><td><input class="po" value="${r.out_per_m}" style="width:70px"></td>
+    <td><input class="pm" value="${r.per_min}" style="width:70px"></td><td class="muted">${esc(r.note)}</td><td><button class="g ps">저장</button></td></tr>`).join("")}</table>`;
+  document.querySelectorAll("#t-prices .ps").forEach((b) => b.onclick = async () => {
+    const tr = b.closest("tr");
+    await sb.from("prices").update({ in_per_m: +tr.querySelector(".pi").value, out_per_m: +tr.querySelector(".po").value, per_min: +tr.querySelector(".pm").value, updated_at: new Date().toISOString() }).eq("id", tr.dataset.id);
+    b.textContent = "저장했어요"; setTimeout(() => b.textContent = "저장", 1500);
+  });
+}
+
+boot().finally(() => { if (location.hash || location.search.includes("code=")) history.replaceState(null, "", location.pathname); });
+</script>
+</body>
+</html>
