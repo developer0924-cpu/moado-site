@@ -46,6 +46,9 @@ button.g{font:inherit;border:0;background:none;color:var(--ink2);padding:2px 0;c
 #login .rule{border-top:2px solid var(--rule);width:56px;margin:14px auto}
 .kakao{background:#FEE500;color:#191600;border:0;border-radius:6px;padding:13px 26px;font-size:15px;font-weight:600;cursor:pointer;margin-top:22px}
 .hide{display:none}
+@media print{header,nav,#t-bill .noprint{display:none!important}main section{display:none!important}#t-bill{display:block!important}body{background:#fff}}
+.bill-paper{background:#fff;border:1px solid var(--line);padding:28px 32px;margin-top:18px;max-width:760px}
+.bill-paper h2{font:600 24px "MaruBuri",serif;margin:0 0 4px}
 </style>
 </head>
 <body>
@@ -62,6 +65,7 @@ button.g{font:inherit;border:0;background:none;color:var(--ink2);padding:2px 0;c
   <nav id="tabs">
     <button data-t="home" class="on">오늘</button>
     <button data-t="live">실시간</button>
+    <button data-t="bill">청구서</button>
     <button data-t="members">고객</button>
     <button data-t="usage">쓰임과 비용</button>
     <button data-t="voice">시킨 말</button>
@@ -73,6 +77,7 @@ button.g{font:inherit;border:0;background:none;color:var(--ink2);padding:2px 0;c
   <main>
     <section id="t-home"></section>
     <section id="t-live" class="hide"></section>
+    <section id="t-bill" class="hide"></section>
     <section id="t-members" class="hide"></section>
     <section id="t-usage" class="hide"></section>
     <section id="t-voice" class="hide"></section>
@@ -115,7 +120,7 @@ function show(t) {
   document.querySelectorAll("#tabs button").forEach((b) => b.classList.toggle("on", b.dataset.t === t));
   document.querySelectorAll("main section").forEach((s) => s.classList.toggle("hide", s.id !== "t-" + t));
   if (t !== "live") clearInterval(LIVE_T);
-  ({ home, live, members, usage, voice, lex, quotes, codes, prices })[t]().catch((e) => $("#t-" + t).innerHTML = `<p class="bad">불러오지 못했어요. ${esc(e.message)}</p>`);
+  ({ home, live, bill, members, usage, voice, lex, quotes, codes, prices })[t]().catch((e) => $("#t-" + t).innerHTML = `<p class="bad">불러오지 못했어요. ${esc(e.message)}</p>`);
 }
 
 // ---------- 실시간 사용 (15초마다) ----------
@@ -151,6 +156,70 @@ async function liveDraw() {
     await rpc("admin_set_limit", { p_kind: tr.dataset.kind, p_id: tr.dataset.id, p_limit: n });
     b.textContent = "바로 적용"; setTimeout(() => liveDraw(), 800);
   });
+}
+
+// ---------- 월별 청구서 ----------
+const BILL = (() => { try { return JSON.parse(localStorage.getItem("bill") || "{}"); } catch (e) { return {}; } })();
+const billSet = (k, v) => { BILL[k] = v; try { localStorage.setItem("bill", JSON.stringify(BILL)); } catch (e) {} };
+const ym = (d) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+let BILL_M = ym(new Date());
+const bWon = (usd) => { const r = +BILL.rate || KRW, x = +BILL.mul || 1; return Math.round((+usd || 0) * r * x / 10) * 10; };
+const cWon = (usd) => Math.round((+usd || 0) * (+BILL.rate || KRW));
+async function bill() {
+  const rows = await rpc("admin_bill_month", { p_month: BILL_M + "-01" });
+  const base = +BILL.base || 0;
+  const tot = rows.reduce((a, r) => a + (+r.total_usd || 0), 0);
+  const charge = rows.reduce((a, r) => a + bWon(r.total_usd) + base, 0);
+  $("#t-bill").innerHTML = `<div class="noprint">
+    <div style="display:flex;gap:14px;align-items:end;flex-wrap:wrap;margin-bottom:16px">
+      <label>달<br><input type="month" id="bm" value="${BILL_M}"></label>
+      <label>환율 (1달러)<br><input type="number" id="brate" value="${+BILL.rate || KRW}" style="width:90px"> 원</label>
+      <label>청구 배율<br>× <input type="number" id="bmul" step="0.1" value="${+BILL.mul || 1}" style="width:70px"></label>
+      <label>사람당 기본료<br><input type="number" id="bbase" step="1000" value="${base}" style="width:100px"> 원</label>
+    </div>
+    <div class="ledger" style="margin-bottom:20px">
+      <div><div class="l">이달 원가 (AI 회사에 나가는 돈)</div><div class="v">${cWon(tot).toLocaleString()}원</div><div class="s">$${tot.toFixed(2)}</div></div>
+      <div><div class="l">청구하면</div><div class="v">${charge.toLocaleString()}원</div><div class="s">원가 × ${+BILL.mul || 1}${base ? " + 기본료 " + base.toLocaleString() + "원" : ""}</div></div>
+      <div><div class="l">쓴 사람</div><div class="v">${rows.length}명</div><div class="s">${BILL_M}</div></div>
+    </div>
+    <table><tr><th>누구</th><th class="num">쓴 날</th><th class="num">AI 부른 수</th><th class="num">녹음(분)</th><th class="num">받아쓰기</th><th class="num">AI 정리·대화</th><th class="num">원가</th><th class="num">청구 금액</th><th></th></tr>
+    ${rows.map((r) => `<tr data-kind="${r.kind}" data-id="${esc(r.id)}" data-name="${esc(r.name || r.id)}">
+      <td><b>${esc(r.name || r.id)}</b><div class="muted">${r.kind === "code" ? "초대코드 " + esc(r.id) : (PLANS[r.plan] || r.plan || "")}</div></td>
+      <td class="num">${r.days}</td><td class="num">${(+r.calls).toLocaleString()}</td><td class="num">${(+r.audio_min).toLocaleString()}</td>
+      <td class="num">${cWon(r.stt_usd).toLocaleString()}원</td><td class="num">${cWon(r.ai_usd).toLocaleString()}원</td>
+      <td class="num">${cWon(r.total_usd).toLocaleString()}원</td><td class="num"><b>${(bWon(r.total_usd) + base).toLocaleString()}원</b></td>
+      <td><button class="b bdet">세부내역</button></td></tr>`).join("") || `<tr><td colspan="9" class="muted">이 달에는 쓴 기록이 없어요</td></tr>`}</table>
+    <p class="note">원가는 단가 탭 값으로 계산한 어림값이에요 (실제 청구는 각 AI 회사 콘솔이 기준). 막힌 시도는 빼고, 카톡 보내기·장소 찾기는 0원. 환율·배율·기본료는 이 PC에만 기억돼요.</p>
+  </div><div id="bdetail"></div>`;
+  $("#bm").onchange = (e) => { BILL_M = e.target.value || BILL_M; bill(); };
+  [["#brate", "rate"], ["#bmul", "mul"], ["#bbase", "base"]].forEach(([q, k]) => $(q).onchange = (e) => { billSet(k, +e.target.value || 0); bill(); });
+  document.querySelectorAll("#t-bill .bdet").forEach((b) => b.onclick = () => { const tr = b.closest("tr"); billDetail(tr.dataset.kind, tr.dataset.id, tr.dataset.name); });
+}
+async function billDetail(kind, id, name) {
+  const rows = await rpc("admin_bill_detail", { p_kind: kind, p_id: id, p_month: BILL_M + "-01" });
+  const base = +BILL.base || 0;
+  const sum = (k) => rows.reduce((a, r) => a + (+r[k] || 0), 0);
+  const [y, m] = BILL_M.split("-");
+  const total = bWon(sum("total_usd")) + base;
+  $("#bdetail").innerHTML = `<div class="bill-paper">
+    <div style="display:flex;justify-content:space-between;align-items:start">
+      <div><h2>하루 사용 청구서</h2><div class="muted">${y}년 ${+m}월 · ${esc(name)} 님</div></div>
+      <div class="noprint"><button class="b" id="bprint">인쇄 · PDF 저장</button> <button class="b" id="bclose">닫기</button></div></div>
+    <div class="ledger" style="margin:18px 0">
+      <div><div class="l">청구 금액</div><div class="v">${total.toLocaleString()}원</div><div class="s">${rows.length}일 사용</div></div>
+      <div><div class="l">녹음 받아쓰기</div><div class="v">${(+sum("audio_min")).toFixed(0)}분</div><div class="s">${bWon(sum("stt_usd")).toLocaleString()}원</div></div>
+      <div><div class="l">AI 정리·대화</div><div class="v">${sum("calls").toLocaleString()}번</div><div class="s">${bWon(sum("ai_usd")).toLocaleString()}원</div></div>
+    </div>
+    <table><tr><th>날짜</th><th class="num">AI 부른 수</th><th class="num">녹음(분)</th><th class="num">받아쓰기</th><th class="num">AI 정리·대화</th><th class="num">금액</th></tr>
+    ${rows.map((r) => `<tr><td>${new Date(r.d + "T00:00:00").toLocaleDateString("ko-KR", { month: "numeric", day: "numeric", weekday: "short" })}</td>
+      <td class="num">${r.calls}</td><td class="num">${(+r.audio_min).toFixed(1)}</td><td class="num">${bWon(r.stt_usd).toLocaleString()}원</td>
+      <td class="num">${bWon(r.ai_usd).toLocaleString()}원</td><td class="num">${bWon(r.total_usd).toLocaleString()}원</td></tr>`).join("")}
+    ${base ? `<tr><td>기본료</td><td></td><td></td><td></td><td></td><td class="num">${base.toLocaleString()}원</td></tr>` : ""}
+    <tr><td><b>합계</b></td><td class="num">${sum("calls").toLocaleString()}</td><td class="num">${(+sum("audio_min")).toFixed(0)}</td><td></td><td></td><td class="num"><b>${total.toLocaleString()}원</b></td></tr></table>
+    <p class="note">금액은 10원 단위로 맞췄어요. 「AI 부른 수」는 상시 듣기 중 30초마다 1번씩 세요.</p></div>`;
+  $("#bprint").onclick = () => window.print();
+  $("#bclose").onclick = () => $("#bdetail").innerHTML = "";
+  $("#bdetail").scrollIntoView({ behavior: "smooth" });
 }
 
 // ---------- 한눈에 ----------
